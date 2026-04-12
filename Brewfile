@@ -3,8 +3,6 @@ brew "chezmoi"
 brew "mise"
 brew "python@3.13"
 
-# ─── uv Tools ────────────────────────────────────────────────────────────────
-uv "pre-commit"
 brew "detect-secrets"
 brew "just"
 brew "jq"
@@ -16,6 +14,9 @@ brew "lazygit"
 brew "fzf"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
+
+# ─── uv Tools ────────────────────────────────────────────────────────────────
+uv "pre-commit"
 
 # ─── Casks ───────────────────────────────────────────────────────────────────
 cask "iterm2"
