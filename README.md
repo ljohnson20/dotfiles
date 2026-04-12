@@ -16,14 +16,18 @@ Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
 ## First-time setup
 
 ```sh
-# 1. Clone the repo into chezmoi's source directory
+# 1. Make a SSH key
+cd ~/.ssh && ssh-keygen
+# Copy the resulting `.pub` key and add it to your github account
+
+# 2. Clone the repo into chezmoi's source directory
 git clone git@github.com:ljohnson20/dotfiles.git ~/.local/share/chezmoi
 
-# 2. Install Homebrew, Oh My Zsh, and all packages
+# 3. Install Homebrew, Oh My Zsh, and all packages
 ~/.local/share/chezmoi/setup.sh
 
-# 3. Apply dotfiles (now that all dependencies exist)
-chezmoi apply
+# 4. Apply dotfiles (now that all dependencies exist)
+chezmoi init && chezmoi apply
 ```
 
 Step 3 will prompt for:

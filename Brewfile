@@ -12,6 +12,7 @@ brew "uv"
 brew "git"
 brew "lazygit"
 brew "fzf"
+brew "gnupg"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 

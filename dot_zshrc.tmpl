@@ -1,8 +1,12 @@
 # Path to your oh-my-zsh installation.
 export ZSH="{{ .chezmoi.homeDir }}/.oh-my-zsh"
 
-# Brew Setup
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# Brew Setup - handles Apple Silicon (/opt/homebrew) and Intel (/usr/local)
+if [[ -x /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -x /usr/local/bin/brew ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
 
 # Path additions
 export PATH="{{ .chezmoi.homeDir }}/.local/bin:$PATH"
@@ -20,8 +24,8 @@ zstyle ':omz:update' mode auto      # update automatically without asking
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git z dotenv)
-source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 source $ZSH/oh-my-zsh.sh
 source <(fzf --zsh)
