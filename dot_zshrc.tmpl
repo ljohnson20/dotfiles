@@ -1,0 +1,67 @@
+# Path to your oh-my-zsh installation.
+export ZSH="{{ .chezmoi.homeDir }}/.oh-my-zsh"
+
+# Brew Setup
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Path additions
+export PATH="{{ .chezmoi.homeDir }}/.local/bin:$PATH"
+
+# Set name of the theme to load
+# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+ZSH_THEME="agnoster"
+
+# Auto-update behavior
+zstyle ':omz:update' mode auto      # update automatically without asking
+
+# Which plugins would you like to load?
+# Standard plugins can be found in $ZSH/plugins/
+# Custom plugins may be added to $ZSH_CUSTOM/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(git z dotenv)
+source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+source $ZSH/oh-my-zsh.sh
+source <(fzf --zsh)
+
+# Enable auto-completions
+# Auto-completions can go in ~/.oh-my-zsh/custom/completions/ or called out here in FPATH
+FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+autoload -U compinit; compinit
+
+# User configuration
+
+# Compilation flags
+# export ARCHFLAGS="-arch x86_64"
+
+# Set personal aliases, overriding those provided by oh-my-zsh libs,
+# plugins, and themes. Aliases can be placed here, though oh-my-zsh
+# users are encouraged to define aliases within the ZSH_CUSTOM folder.
+# For a full list of active aliases, run `alias`.
+
+# Aliases
+alias k="kubectl"
+alias kctx="kubectx"
+alias kcc="kubectl config current-context"
+alias kns="kubens"
+alias brewup="brew update; brew upgrade; brew cleanup"
+alias zshconfig="nvim ~/.zshrc"
+alias tf="terraform"
+
+# Bindkeys
+# Accept and run zsh auto-complete suggestion
+bindkey '^ ' autosuggest-execute
+
+# Adding environmental variables for go
+export GOPATH=$HOME/go
+export GO111MODULE=on
+
+export EDITOR="nvim"
+
+# Mise version manager PATH connection
+eval "$(mise activate zsh)"
+
+# Global environment variables
+[[ -f "$HOME/.env" ]] && source "$HOME/.env"

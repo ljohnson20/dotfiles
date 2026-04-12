@@ -1,0 +1,8 @@
+{{- $name := promptStringOnce . "name" "Full name (John Smith)" -}}
+{{- $email := promptStringOnce . "email" "Email address" -}}
+{{- $githubPAT := promptStringOnce . "github_pat" "GitHub Personal Access Token" -}}
+
+[data]
+    name = {{ $name | quote }}
+    email = {{ $email | quote }}
+    github_pat = {{ $githubPAT | quote }}

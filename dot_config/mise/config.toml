@@ -1,0 +1,9 @@
+[tools]
+node = "24"
+go = "latest"
+terraform = "latest"
+bun = "latest"
+python = "latest"
+
+[settings.python]
+uv_venv_auto = "create|source"
