@@ -18,4 +18,3 @@ repos:
     hooks:
       - id: detect-secrets
         args: ["--baseline", ".secrets.baseline"]
-        exclude: dot_config/nvim/lazy-lock.json
