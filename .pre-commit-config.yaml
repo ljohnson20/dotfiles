@@ -9,6 +9,7 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-json
+        exclude: dot_config/cmux/settings\.json
       - id: check-toml
       - id: check-merge-conflict
       - id: check-added-large-files

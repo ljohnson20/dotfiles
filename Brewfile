@@ -19,8 +19,12 @@ brew "zsh-syntax-highlighting"
 # ─── uv Tools ────────────────────────────────────────────────────────────────
 uv "pre-commit"
 
+# ─── Taps ────────────────────────────────────────────────────────────────────
+tap "manaflow-ai/cmux"
+
 # ─── Casks ───────────────────────────────────────────────────────────────────
 cask "ghostty"
+cask "cmux"
 cask "claude-code"
 cask "docker-desktop"
 cask "font-anonymice-nerd-font"
