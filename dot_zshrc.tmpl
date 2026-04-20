@@ -14,6 +14,7 @@ export PATH="{{ .chezmoi.homeDir }}/.local/bin:$PATH"
 # Set name of the theme to load
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="agnoster"
+DEFAULT_USER="{{ .chezmoi.username }}"
 
 # Auto-update behavior
 zstyle ':omz:update' mode auto      # update automatically without asking
