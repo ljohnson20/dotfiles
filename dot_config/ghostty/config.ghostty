@@ -1,0 +1,10 @@
+# --- Appearance ---
+font-family = AnonymicePro Nerd Font
+cursor-style = block
+cursor-click-to-move = true
+theme = tokyonight
+unfocused-split-fill = #ffffff
+unfocused-split-opacity = 0.8
+
+# --- Usage ---
+copy-on-select = clipboard

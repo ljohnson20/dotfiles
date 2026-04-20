@@ -20,7 +20,7 @@ brew "zsh-syntax-highlighting"
 uv "pre-commit"
 
 # ─── Casks ───────────────────────────────────────────────────────────────────
-cask "iterm2"
+cask "ghostty"
 cask "claude-code"
 cask "docker-desktop"
 cask "font-anonymice-nerd-font"
