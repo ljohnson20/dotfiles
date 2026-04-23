@@ -8,7 +8,9 @@
     "allow": [
       "Bash(npm run lint)",
       "Bash(npm run test *)",
-      "Read(~/.zshrc)"
+      "Read(~/.zshrc)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [
       "Read(./.env)",
