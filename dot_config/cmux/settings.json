@@ -14,7 +14,6 @@
     "commandPaletteSearchesAllSurfaces" : false,
     "focusPaneOnFirstClick" : false,
     "keepWorkspaceOpenWhenClosingLastSurface" : false,
-    "language" : "en",
     "minimalMode" : false,
     "newWorkspacePlacement" : "afterCurrent",
     "preferredEditor" : "nvim",
