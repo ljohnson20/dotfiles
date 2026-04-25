@@ -2,7 +2,8 @@
 brew "chezmoi"
 brew "mise"
 brew "python@3.13"
-
+brew "ansible"
+brew "packer"
 brew "detect-secrets"
 brew "just"
 brew "jq"
@@ -21,6 +22,7 @@ uv "pre-commit"
 
 # ─── Taps ────────────────────────────────────────────────────────────────────
 tap "manaflow-ai/cmux"
+tap "hashicorp/tap"
 
 # ─── Casks ───────────────────────────────────────────────────────────────────
 cask "ghostty"
