@@ -277,5 +277,6 @@
   {{ end -}}
   "sandbox": {
     "enabled": {{ if eq .machineType "vm" }}false{{ else }}true{{ end }}
-  }
+  },
+  "advisorModel": "opus"
 }
