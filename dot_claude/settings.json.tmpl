@@ -5,17 +5,70 @@
     "pr": ""
   },
   "permissions": {
+    {{ if eq .machineType "vm" -}}
+    "defaultMode": "bypassPermissions",
+    {{ end -}}
     "allow": [
-      "Bash(npm run lint)",
-      "Bash(npm run test *)",
       "Read(~/.zshrc)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(just *)",
+      "Bash(yq *)",
+      "Bash(jq *)",
+      "Bash(ls)",
+      "Bash(ls *)",
+      "Bash(git *)",
+      "Bash(grep *)",
+      "Bash(go *)",
+      "Bash(gofmt *)",
+      "Bash(docker *)",
+      "Bash(rg *)",
+      "Bash(wc *)",
+      "Bash(wc)",
+      "Bash(true)",
+      "Bash(echo *)",
+      "Bash(pytest *)",
+      "Bash(python -m py_compile *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(cargo *)",
+      "Bash(make *)",
+      "Bash(curl *)",
+      "Bash(cat *)",
+      "Bash(find *)",
+      "Bash(sed *)",
+      "Bash(awk *)",
+      "Bash(touch *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(diff *)",
+      "Bash(sort *)",
+      "Bash(uniq *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(chezmoi *)",
+      "Bash(brew *)",
+      "Bash(mise *)",
+      "Bash(bun *)",
+      "Bash(uv *)",
+      "Bash(terraform *)",
+      "Bash(kubectl *)"
     ],
     "deny": [
       "Read(./.env)",
       "Read(./.env.*)",
+      "Read(~/**/.env)",
+      "Read(~/**/.env.*)",
       "Read(./secrets/**)",
+      "Bash(cat *.env*)",
+      "Bash(less *.env*)",
+      "Bash(more *.env*)",
+      "Bash(head *.env*)",
+      "Bash(tail *.env*)",
+      "Bash(bat *.env*)",
+      "Bash(. .env*)",
       "Bash(rm -rf /*)",
       "Bash(rm -rf /)",
       "Bash(sudo rm -rf /*)",
@@ -64,12 +117,11 @@
       "Bash(*monero*)",
       "Bash(*bitcoin*)",
       "Bash(*miner*)",
-      "Bash(git push --force origin master*)",
-      "Bash(git push --force origin main*)",
-      "Bash(git push -f origin master*)",
-      "Bash(git push -f origin main*)",
-      "Bash(git reset --hard origin/master*)",
-      "Bash(git reset --hard origin/main*)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -f*)",
+      "Bash(git clean -df*)",
       "Bash(cat ~/.aws/*)",
       "Bash(cat ~/.ssh/id_*)",
       "Bash(cat /root/.ssh/*)",
@@ -162,6 +214,9 @@
     ]
   },
   "model": "sonnet",
+  {{ if eq .machineType "vm" -}}
+  "skipDangerousModePermissionPrompt": true,
+  {{ else -}}
   "hooks": {
     "Stop": [
       {
@@ -219,7 +274,8 @@
       }
     ]
   },
+  {{ end -}}
   "sandbox": {
-    "enabled": true
+    "enabled": {{ if eq .machineType "vm" }}false{{ else }}true{{ end }}
   }
 }
