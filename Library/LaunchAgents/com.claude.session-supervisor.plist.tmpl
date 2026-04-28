@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.claude.session-supervisor</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>{{ .chezmoi.homeDir }}/.local/bin/claude-session-supervisor</string>
+    </array>
+
+    <!-- Ensure Homebrew, mise-managed runtimes, and ~/.local/bin are on PATH -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>{{ .chezmoi.homeDir }}/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+        <key>HOME</key>
+        <string>{{ .chezmoi.homeDir }}</string>
+    </dict>
+
+    <!-- Restart the supervisor if it ever exits -->
+    <key>KeepAlive</key>
+    <true/>
+
+    <!-- Minimum seconds between supervisor restarts (prevents rapid crash loops) -->
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+
+    <!-- Start when the user logs in -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- Supervisor stdout/stderr go here (session logs are per-directory in ~/.local/share/claude-sessions/logs/) -->
+    <key>StandardOutPath</key>
+    <string>/tmp/claude-session-supervisor.out</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/claude-session-supervisor.err</string>
+</dict>
+</plist>

@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+# claude-session-supervisor
+#
+# Keeps one `claude remote-control` process alive per directory listed in
+# ~/.config/claude-sessions/directories. Managed by launchd — KeepAlive
+# ensures this supervisor itself is restarted if it ever exits.
+#
+# Log files: ~/.local/share/claude-sessions/logs/<dirname>.log
+
+set -uo pipefail
+
+CONFIG_FILE="${HOME}/.config/claude-sessions/directories"
+LOG_DIR="${HOME}/.local/share/claude-sessions/logs"
+
+mkdir -p "$LOG_DIR"
+
+log() {
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] [supervisor] $*"
+}
+
+find_claude() {
+  local path
+  for path in \
+    "$(command -v claude 2>/dev/null || true)" \
+    "${HOME}/.local/bin/claude" \
+    "${HOME}/.claude/bin/claude" \
+    "/opt/homebrew/bin/claude" \
+    "/usr/local/bin/claude"; do
+    [[ -n "$path" && -x "$path" ]] && { echo "$path"; return 0; }
+  done
+  log "ERROR: claude binary not found in PATH or known locations"
+  return 1
+}
+
+read_dirs() {
+  [[ -f "$CONFIG_FILE" ]] || { log "ERROR: Config not found: $CONFIG_FILE"; exit 1; }
+  grep -v '^\s*#' "$CONFIG_FILE" | grep -v '^\s*$' | sed "s|^~|${HOME}|"
+}
+
+# Associative arrays: dir -> value
+declare -A PIDS       # running pid (or empty)
+declare -A STARTED    # epoch when process last started
+declare -A WAIT_UNTIL # epoch when we're allowed to retry
+declare -A BACKOFF    # current backoff seconds
+
+start_session() {
+  local dir="$1"
+  local name logfile
+  name=$(basename "$dir")
+  logfile="${LOG_DIR}/${name}.log"
+  log "Starting session in: $dir"
+  (cd "$dir" && exec "$CLAUDE" remote-control) >> "$logfile" 2>&1 &
+  PIDS["$dir"]=$!
+  STARTED["$dir"]=$(date +%s)
+  log "Started PID ${PIDS[$dir]} for: $dir"
+}
+
+cleanup() {
+  log "Received shutdown signal — stopping all sessions"
+  local dir pid
+  for dir in "${!PIDS[@]}"; do
+    pid="${PIDS[$dir]:-}"
+    if [[ -n "$pid" ]] && kill -0 "$pid" 2>/dev/null; then
+      log "Stopping PID $pid ($dir)"
+      kill "$pid" 2>/dev/null || true
+    fi
+  done
+  wait
+  exit 0
+}
+
+trap cleanup SIGTERM SIGINT
+
+CLAUDE=$(find_claude) || exit 1
+log "Using claude: $CLAUDE"
+
+# Read configured directories
+mapfile -t DIRS < <(read_dirs)
+(( ${#DIRS[@]} > 0 )) || { log "ERROR: No directories configured in $CONFIG_FILE"; exit 1; }
+
+# Initial startup
+for dir in "${DIRS[@]}"; do
+  BACKOFF["$dir"]=5
+  WAIT_UNTIL["$dir"]=0
+  STARTED["$dir"]=0
+  if [[ ! -d "$dir" ]]; then
+    log "WARNING: Directory does not exist: $dir (will retry)"
+    PIDS["$dir"]=""
+    WAIT_UNTIL["$dir"]=$(( $(date +%s) + 30 ))
+    continue
+  fi
+  PIDS["$dir"]=""
+  start_session "$dir"
+done
+
+# Supervision loop — checks every 5 seconds
+while true; do
+  sleep 5
+  now=$(date +%s)
+
+  for dir in "${!PIDS[@]}"; do
+    _pid="${PIDS[$dir]:-}"
+
+    # Process is alive
+    if [[ -n "$_pid" ]] && kill -0 "$_pid" 2>/dev/null; then
+      # Reset backoff once the process has been stable for >60s
+      _started="${STARTED[$dir]:-0}"
+      if (( now - _started > 60 )); then
+        BACKOFF["$dir"]=5
+      fi
+      continue
+    fi
+
+    # Process is dead — check backoff window
+    if (( now < ${WAIT_UNTIL[$dir]:-0} )); then
+      log "Backing off $(( ${WAIT_UNTIL[$dir]} - now ))s before restarting: $(basename "$dir")"
+      continue
+    fi
+
+    # Directory missing?
+    if [[ ! -d "$dir" ]]; then
+      log "Directory still missing: $dir (retry in 60s)"
+      WAIT_UNTIL["$dir"]=$(( now + 60 ))
+      continue
+    fi
+
+    # Schedule next retry window using current backoff, then double it (cap 60s)
+    _backoff="${BACKOFF[$dir]:-5}"
+    WAIT_UNTIL["$dir"]=$(( now + _backoff ))
+    _next=$(( _backoff * 2 ))
+    (( _next > 60 )) && _next=60
+    BACKOFF["$dir"]=$_next
+
+    start_session "$dir"
+  done
+done

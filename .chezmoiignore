@@ -1,2 +1,9 @@
 README.md
 setup.sh
+
+# Claude Code remote session keeper — vm machines only
+{{ if ne .machineType "vm" }}
+.config/claude-sessions/directories
+.local/bin/claude-session-supervisor
+Library/LaunchAgents/com.claude.session-supervisor.plist
+{{ end }}

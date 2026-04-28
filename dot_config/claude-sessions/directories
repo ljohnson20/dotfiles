@@ -1,0 +1,4 @@
+# Claude Code remote sessions to keep alive
+# One directory per line. Lines starting with # are ignored.
+# Tilde expansion is supported.
+~/repos/home-lab
