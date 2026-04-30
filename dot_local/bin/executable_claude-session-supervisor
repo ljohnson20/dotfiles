@@ -67,7 +67,9 @@ watch_dir() {
 
     log "[$name] Starting session '$session_name'..."
     started=$(date +%s)
-    (cd "$dir" && exec "$claude" remote-control --name "$session_name") >> "$logfile" 2>&1
+    (cd "$dir" && exec "$claude" remote-control \
+      --name "$session_name" \
+      --remote-control-session-name-prefix "$session_name") >> "$logfile" 2>&1
     now=$(date +%s)
     elapsed=$(( now - started ))
 
