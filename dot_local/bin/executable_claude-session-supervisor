@@ -44,9 +44,10 @@ read_dirs() {
 watch_dir() {
   local dir="$1"
   local claude="$2"
-  local name logfile backoff started now elapsed
+  local name logfile count_file backoff started now elapsed count session_name
   name=$(basename "$dir")
   logfile="${LOG_DIR}/${name}.log"
+  count_file="${LOG_DIR}/${name}.count"
   backoff=5
 
   while true; do
@@ -56,17 +57,25 @@ watch_dir() {
       continue
     fi
 
-    log "[$name] Starting session..."
+    # Increment persistent session counter so each restart gets a unique name
+    count=1
+    if [[ -f "$count_file" ]]; then
+      count=$(( $(cat "$count_file") + 1 ))
+    fi
+    echo "$count" > "$count_file"
+    session_name="${name}-${count}"
+
+    log "[$name] Starting session '$session_name'..."
     started=$(date +%s)
-    (cd "$dir" && exec "$claude" remote-control) >> "$logfile" 2>&1
+    (cd "$dir" && exec "$claude" remote-control --name "$session_name") >> "$logfile" 2>&1
     now=$(date +%s)
     elapsed=$(( now - started ))
 
     if (( elapsed > 60 )); then
-      log "[$name] Session ran ${elapsed}s — resetting backoff"
+      log "[$name] Session '$session_name' ran ${elapsed}s — resetting backoff"
       backoff=5
     else
-      log "[$name] Session exited after ${elapsed}s — backing off ${backoff}s"
+      log "[$name] Session '$session_name' exited after ${elapsed}s — backing off ${backoff}s"
       sleep "$backoff"
       backoff=$(( backoff * 2 ))
       (( backoff > 60 )) && backoff=60
